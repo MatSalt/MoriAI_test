@@ -9,7 +9,7 @@ services:
       - "8000:8000"
     volumes:
       - tts-data:/app/tts
-      - sound-data:/app/sound
+      - data-volume:/app/data
     networks:
       - tts-network
     healthcheck:
@@ -30,10 +30,10 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./tts
-  sound-data:
+      device: ./src/tts
+  data-volume:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./data/sound
+      device: ./data

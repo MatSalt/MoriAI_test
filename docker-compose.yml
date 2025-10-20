@@ -18,6 +18,38 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    depends_on:
+      nginx:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend-builder:
+    build:
+      context: ./src/front
+      dockerfile: ../../docker/front/Dockerfile
+    container_name: frontend-builder
+    volumes:
+      - ./src/front:/app
+      - /app/node_modules
+    networks:
+      - tts-network
+    restart: "no"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: nginx-server
+    ports:
+      - "3000:80"
+    volumes:
+      - ./src/front/dist:/usr/share/nginx/html:ro
+      - ./data:/data:ro
+    networks:
+      - tts-network
+    depends_on:
+      frontend-builder:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 networks:

@@ -41,7 +41,8 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     container_name: nginx-server
     ports:
-      - "3000:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./src/front/dist:/usr/share/nginx/html:ro
       - ./data:/data:ro

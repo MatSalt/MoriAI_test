@@ -11,3 +11,11 @@
 *.egg-info/
 dist/
 build/
+
+# Frontend
+node_modules/
+src/front/dist/
+src/front/.vite/
+
+# SSL Certificates
+docker/nginx/certs/

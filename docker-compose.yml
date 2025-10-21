@@ -8,10 +8,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - tts-data:/app/tts
+      # 개발 모드: 소스 코드 실시간 반영 (주석 해제)
+      # - ./src/tts:/app/tts
+      # 프로덕션 모드: 데이터 볼륨만 마운트
       - data-volume:/app/data
     networks:
-      - tts-network
+      - moriai-network
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
       interval: 30s
@@ -32,7 +34,7 @@ services:
       - ./src/front:/app
       - /app/node_modules
     networks:
-      - tts-network
+      - moriai-network
     restart: "no"
 
   nginx:
@@ -47,23 +49,17 @@ services:
       - ./src/front/dist:/usr/share/nginx/html:ro
       - ./data:/data:ro
     networks:
-      - tts-network
+      - moriai-network
     depends_on:
       frontend-builder:
         condition: service_completed_successfully
     restart: unless-stopped
 
 networks:
-  tts-network:
+  moriai-network:
     driver: bridge
 
 volumes:
-  tts-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./src/tts
   data-volume:
     driver: local
     driver_opts:

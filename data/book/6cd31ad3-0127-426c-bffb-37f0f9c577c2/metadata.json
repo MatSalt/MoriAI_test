@@ -1,0 +1,63 @@
+{
+  "id": "6cd31ad3-0127-426c-bffb-37f0f9c577c2",
+  "title": "",
+  "cover_image": "/data/image/6cd31ad3-0127-426c-bffb-37f0f9c577c2/0_page_1.png",
+  "status": "success",
+  "pages": [
+    {
+      "id": "c4fd1a96-f8cc-4026-9bdd-6d4caa30380f",
+      "index": 1,
+      "type": "video",
+      "content": "/data/video/6cd31ad3-0127-426c-bffb-37f0f9c577c2/page_1.mp4",
+      "dialogues": [
+        {
+          "id": "cb35beb3-abd2-4127-8f69-59f08c16f9a7",
+          "index": 1,
+          "text": "Good morning! I wake up. Today is a fun day. Yay, yay!",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/d4e953dc-38d6-4ca1-843e-38402c1515fa.mp3"
+        },
+        {
+          "id": "7569a0d5-8f79-4934-a079-2efd10284377",
+          "index": 2,
+          "text": "I see a big wolf! Wow! I ride the wolf with Daddy. We take a picture. Click, click!",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/31a74178-10aa-4e15-ab7e-6258675881e6.mp3"
+        },
+        {
+          "id": "6d029c5b-55ab-432f-8cd1-cfdbd0a92fdd",
+          "index": 3,
+          "text": "Then I see a big moon. It is so pretty. Wow! So shiny.",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/3a56beb0-5fc6-4c37-aadc-99e67d30dbea.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/6cd31ad3-0127-426c-bffb-37f0f9c577c2/0_page_1.png"
+    },
+    {
+      "id": "a331dc85-8f7a-409a-851f-49e07a583b4e",
+      "index": 2,
+      "type": "video",
+      "content": "/data/video/6cd31ad3-0127-426c-bffb-37f0f9c577c2/page_2.mp4",
+      "dialogues": [
+        {
+          "id": "748181e7-3c9d-450f-ae78-047fa6b4ff1f",
+          "index": 1,
+          "text": "I stand by the moon. I smile. I make a V with my fingers. Look at me! So cute!",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/9abbdb09-5fa8-4807-afbd-ca60043b05b9.mp3"
+        },
+        {
+          "id": "bc04e95d-b525-4fa5-888a-4d662897748a",
+          "index": 2,
+          "text": "What a happy day! So much fun with Daddy. Hee hee.",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/3d99c381-b7bc-4e18-990d-3cbe364eb074.mp3"
+        },
+        {
+          "id": "1d0a44db-8431-40c8-91b3-b899fcb63362",
+          "index": 3,
+          "text": "Now it is time for bed. Good night, everyone. Zzz, zzz. Sweet dreams!",
+          "part_audio_url": "/data/sound/7ce34361-0c4f-4bbf-9349-9e5b8d1a8869/5e58fabf-2c47-4bcf-b909-cb64f2d9d27d.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/6cd31ad3-0127-426c-bffb-37f0f9c577c2/1_page_2.png"
+    }
+  ],
+  "created_at": "2025-10-22T18:56:41.578098"
+}

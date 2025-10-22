@@ -1,5 +1,6 @@
 .env
 .venv
+.claude
 **/**/.venv
 **/__pycache__/
 *.pyc
@@ -19,3 +20,14 @@ src/front/.vite/
 
 # SSL Certificates
 docker/nginx/certs/
+
+# Test & Coverage
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+.hypothesis/
+
+# Data directories (local development)
+src/storybook/data/
+src/tts/data/

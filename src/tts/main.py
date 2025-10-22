@@ -41,14 +41,18 @@ class TTSRequest(BaseModel):
     texts: List[List[str]] = Field(
         ...,
         description="중첩 문자열 리스트 (예: [['hello', 'world'], ['test']])",
-        example=[["안녕하세요", "반갑습니다"], ["테스트입니다"]],
+        example=[["North Korea fired multiple short-range ballistic missiles on Wednesday morning", "just days ahead of the Asia-Pacific Economic Cooperation summit in Gyeongju"], ["It marks the North’s first ballistic missile provocation in five months. Kim In-kyung has this report."]],
     )
     voice_id: Optional[str] = Field(
         default=None,
         description="ElevenLabs 음성 ID (선택 사항, 미입력시 환경변수 기본값 사용)",
-        example="21m00Tcm4TlvDq8ikWAM",
+        example="TxWD6rImY3v4izkm2VL0",
     )
-    model_id: Optional[str] = Field(default=None, description="TTS 모델 ID (선택 사항)")
+    model_id: Optional[str] = Field(
+        default=None,
+        description="TTS 모델 ID (선택 사항)",
+        example="eleven_v3",
+    )
     language: Optional[str] = Field(
         default="en", description="언어 코드 (ISO 639-1, 선택 사항)", example="en"
     )
@@ -90,8 +94,11 @@ class TTSResponse(BaseModel):
         ...,
         description="생성된 MP3 파일 경로 (중첩 리스트)",
         example=[
-            ["/app/data/sound/batch-uuid/uuid1.mp3", "/app/data/sound/batch-uuid/uuid2.mp3"],
-            ["/app/data/sound/batch-uuid/uuid3.mp3"],
+            [
+                "/data/sound/batch-uuid/uuid1.mp3",
+                "/data/sound/batch-uuid/uuid2.mp3",
+            ],
+            ["/data/sound/batch-uuid/uuid3.mp3"],
         ],
     )
     total_count: int = Field(..., description="총 생성된 파일 수")
@@ -106,9 +113,11 @@ class WordTTSResponse(BaseModel):
     success: bool = Field(..., description="성공 여부")
     word: str = Field(..., description="변환된 단어")
     file_path: str = Field(
-        ..., description="생성된 MP3 파일 경로", example="/app/data/sound/word/cat.mp3"
+        ..., description="생성된 MP3 파일 경로", example="/data/sound/word/cat.mp3"
     )
-    cached: bool = Field(..., description="기존 파일 재사용 여부 (True: 캐시됨, False: 새로 생성)")
+    cached: bool = Field(
+        ..., description="기존 파일 재사용 여부 (True: 캐시됨, False: 새로 생성)"
+    )
     duration_ms: Optional[int] = Field(
         default=None, description="처리 시간 (밀리초, 캐시된 경우 None)"
     )
@@ -261,7 +270,8 @@ async def tts_word(word: str):
     # 추가적인 보안을 위해 경로 조작 문자 차단
     if any(char in word for char in [".", "/", "\\", ".."]):
         raise HTTPException(
-            status_code=400, detail="단어에 경로 조작 문자(., /, \\)를 포함할 수 없습니다."
+            status_code=400,
+            detail="단어에 경로 조작 문자(., /, \\)를 포함할 수 없습니다.",
         )
 
     # 캐시 여부 확인 (generate_word 호출 전)

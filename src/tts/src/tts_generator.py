@@ -182,7 +182,7 @@ class TtsGenerator:
             style: 스타일 강조
 
         Returns:
-            생성된 MP3 파일 경로 (예: "/app/data/sound/uuid.mp3")
+            생성된 MP3 파일 경로 (예: "/data/sound/uuid.mp3")
 
         Raises:
             Exception: TTS 생성 실패 시
@@ -228,8 +228,8 @@ class TtsGenerator:
 
                 logger.debug(f"TTS 생성 완료: {file_path}")
 
-                # 컨테이너 내 절대 경로 반환
-                return str(file_path)
+                # 컨테이너 내 절대 경로 반환 (/app 제거)
+                return str(file_path).removeprefix('/app')
 
             except Exception as e:
                 logger.error(f"TTS 생성 실패 ('{text[:30]}...'): {e}")
@@ -272,7 +272,7 @@ class TtsGenerator:
             style: 스타일 강조 (Optional, 환경변수 기본값 사용)
 
         Returns:
-            생성된 또는 캐시된 MP3 파일 경로 (예: "/app/data/sound/word/cat.mp3")
+            생성된 또는 캐시된 MP3 파일 경로 (예: "/data/sound/word/cat.mp3")
 
         Raises:
             Exception: TTS 생성 실패 시
@@ -287,7 +287,7 @@ class TtsGenerator:
         # 캐시된 파일이 있으면 재사용
         if file_path.exists():
             logger.info(f"캐시된 파일 재사용: {word}.mp3")
-            return str(file_path)
+            return str(file_path).removeprefix('/app')
 
         # 환경변수 기본값 처리
         voice_id = voice_id or os.getenv("TTS_DEFAULT_VOICE_ID", "TxWD6rImY3v4izkm2VL0")
@@ -341,7 +341,7 @@ class TtsGenerator:
             await self._save_audio_file(file_path, decoded_audio)
 
             logger.info(f"단어 TTS 생성 완료: {file_path}")
-            return str(file_path)
+            return str(file_path).removeprefix('/app')
 
         except Exception as e:
             logger.error(f"단어 TTS 생성 실패 ('{word}'): {e}")

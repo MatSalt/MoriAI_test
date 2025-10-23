@@ -37,7 +37,13 @@ services:
       - storybook-data:/app/storybook
       - data-volume:/app/data
     environment:
-      - TTS_API_URL=http://tts-api:8000
+      - TTS_API_URL=${TTS_API_URL}
+      - BOOK_DATA_DIR=${BOOK_DATA_DIR}
+      - IMAGE_DATA_DIR=${IMAGE_DATA_DIR}
+      - VIDEO_DATA_DIR=${VIDEO_DATA_DIR}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    env_file:
+      - .env
     networks:
       - moriai-network
     healthcheck:

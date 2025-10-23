@@ -12,3 +12,14 @@ starlette==0.48.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.37.0
+python-multipart==0.0.20
+aiofiles==24.1.0
+google-genai
+pillow
+# python-dotenv>=1.0.0
+
+# Test dependencies
+pytest==8.3.4
+pytest-asyncio==0.24.0
+respx==0.21.1
+pytest-cov==6.0.0

@@ -1,0 +1,93 @@
+{
+  "id": "be67db0f-c235-472f-92b7-0fa8e76ffd3a",
+  "title": "",
+  "cover_image": "/data/image/be67db0f-c235-472f-92b7-0fa8e76ffd3a/0_page_1.png",
+  "status": "success",
+  "pages": [
+    {
+      "id": "7686cee1-a3cd-4c8b-b252-4193cfe05fce",
+      "index": 1,
+      "type": "image",
+      "content": "/data/image/be67db0f-c235-472f-92b7-0fa8e76ffd3a/0_page_1.png",
+      "dialogues": [
+        {
+          "id": "155ff915-cc3e-4f26-b5d1-d70b27935508",
+          "index": 1,
+          "text": "Good morning! I go on a big trip. Yay!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/ed53d7e9-0ec4-479b-bc56-a5764708b19b.mp3"
+        },
+        {
+          "id": "d2c44b0c-396a-47a9-840d-65bf82538a3c",
+          "index": 2,
+          "text": "See a big boat! A cruise ship. Wow! We take a photo. Smile, smile!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/78aa2f44-07ff-4751-a9ed-414dac3cff42.mp3"
+        }
+      ],
+      "fallback_image": ""
+    },
+    {
+      "id": "ad1f7657-a5d1-4594-8b9e-82a622692c97",
+      "index": 2,
+      "type": "image",
+      "content": "/data/image/be67db0f-c235-472f-92b7-0fa8e76ffd3a/1_page_2.png",
+      "dialogues": [
+        {
+          "id": "ed088ee3-efaa-4f1f-94a0-9b4ffda102b7",
+          "index": 1,
+          "text": "The boat ride is fun. Woohoo! Hello, Philippines!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/68f526e6-7cf8-4d3e-a572-5319abdd154e.mp3"
+        },
+        {
+          "id": "18525358-fd81-4059-8119-a24983ea3fd3",
+          "index": 2,
+          "text": "Walk, walk, walk. So tired. A taxi! Beep, beep! I am happy. Yay!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/df6cefa6-6e1c-4c88-acb3-dc2d6250a04e.mp3"
+        }
+      ],
+      "fallback_image": ""
+    },
+    {
+      "id": "abf38526-56c4-4eea-ba72-10376a7b761c",
+      "index": 3,
+      "type": "video",
+      "content": "/data/video/be67db0f-c235-472f-92b7-0fa8e76ffd3a/page_3.mp4",
+      "dialogues": [
+        {
+          "id": "39865498-41b9-40e7-9088-61974147f795",
+          "index": 1,
+          "text": "We go to a market. So many things! Smell, smell. Wow!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/06e16515-b620-4f89-932e-938da8fabfea.mp3"
+        },
+        {
+          "id": "7470b82a-1e15-4f71-b086-4cd24eefe9b1",
+          "index": 2,
+          "text": "I see an umbrella. Pretty umbrella. Oh no! Snap, snap! It broke. Funny, funny. He he!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/a8f049f5-a085-44dc-8ca5-04a38629dd85.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/be67db0f-c235-472f-92b7-0fa8e76ffd3a/2_page_3.png"
+    },
+    {
+      "id": "5a2a4b04-5b9b-4b83-bef5-76a33e11f755",
+      "index": 4,
+      "type": "video",
+      "content": "/data/video/be67db0f-c235-472f-92b7-0fa8e76ffd3a/page_4.mp4",
+      "dialogues": [
+        {
+          "id": "872670b9-1495-4d2b-989b-ccd532bc905b",
+          "index": 1,
+          "text": "Time to go home. Bye bye, Philippines! Eat, eat, eat! My tummy is full.",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/d5f2948d-9dbc-4b07-980d-ee66d3237f01.mp3"
+        },
+        {
+          "id": "00a90295-e08c-4c23-b0d7-6beda9e23604",
+          "index": 2,
+          "text": "Jollibee is yummy! Yum, yum! Chicken and rice. So good! Good night. Happy day!",
+          "part_audio_url": "/data/sound/d9ee9bbf-3e19-4d25-a52c-7bf757d4e20b/2aa8f09c-a6f0-4ae0-ba56-704c53ed8101.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/be67db0f-c235-472f-92b7-0fa8e76ffd3a/3_page_4.png"
+    }
+  ],
+  "created_at": "2025-10-23T04:27:54.680852"
+}

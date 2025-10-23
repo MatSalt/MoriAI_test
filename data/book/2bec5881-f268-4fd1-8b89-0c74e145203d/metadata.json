@@ -1,0 +1,51 @@
+{
+  "id": "2bec5881-f268-4fd1-8b89-0c74e145203d",
+  "title": "",
+  "cover_image": "/data/image/2bec5881-f268-4fd1-8b89-0c74e145203d/0_page_1.png",
+  "status": "success",
+  "pages": [
+    {
+      "id": "9838b6be-449f-44f6-9bab-f03e002c3624",
+      "index": 1,
+      "type": "video",
+      "content": "/data/video/2bec5881-f268-4fd1-8b89-0c74e145203d/page_1.mp4",
+      "dialogues": [
+        {
+          "id": "e88b2d06-b718-473b-bc9f-fff2ed073bcc",
+          "index": 1,
+          "text": "Good morning! I wake up. I go to the museum. Wow! Look! A big wolf. I ride it with Papa. Up, up! So much fun!",
+          "part_audio_url": "/data/sound/6d319596-ae72-4827-93ed-f5676b6cee07/a89bf1f8-d984-4246-835c-32d224191273.mp3"
+        },
+        {
+          "id": "e2969ca5-251e-40ea-a448-71817481c49f",
+          "index": 2,
+          "text": "I get a balloon! It is so pretty. I hold it tight. My balloon! Yay, yay!",
+          "part_audio_url": "/data/sound/6d319596-ae72-4827-93ed-f5676b6cee07/28e74027-22ca-4802-b4a9-f158c44717d4.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/2bec5881-f268-4fd1-8b89-0c74e145203d/0_page_1.png"
+    },
+    {
+      "id": "1db13e0b-87d0-4ae5-9ec3-430ed76851e4",
+      "index": 2,
+      "type": "video",
+      "content": "/data/video/2bec5881-f268-4fd1-8b89-0c74e145203d/page_2.mp4",
+      "dialogues": [
+        {
+          "id": "fab461d5-cd69-45cd-8397-be9ee4083ce0",
+          "index": 1,
+          "text": "Now, I go to the beach. Splash, splash! I see the sand. I dig, dig, dig!",
+          "part_audio_url": "/data/sound/6d319596-ae72-4827-93ed-f5676b6cee07/83e252cf-a17e-4ea4-a10a-268d4930b0ba.mp3"
+        },
+        {
+          "id": "db2310ce-db4a-494f-afef-bc490a9ae339",
+          "index": 2,
+          "text": "I build a big castle. Look! My sandcastle. So much fun! What a happy day. Night, night, everyone!",
+          "part_audio_url": "/data/sound/6d319596-ae72-4827-93ed-f5676b6cee07/ba9994b5-fd64-4df0-8214-a1d28b756081.mp3"
+        }
+      ],
+      "fallback_image": "/data/image/2bec5881-f268-4fd1-8b89-0c74e145203d/1_page_2.png"
+    }
+  ],
+  "created_at": "2025-10-23T03:51:57.818544"
+}

@@ -6,6 +6,7 @@ Storybook Business Logic Services
 
 import logging
 import os
+import shutil
 from typing import List
 from pathlib import Path
 from fastapi import UploadFile
@@ -69,6 +70,11 @@ class BookService:
         self.video_data_dir = video_data_dir or os.getenv(
             "VIDEO_DATA_DIR", "./data/video/"
         )
+
+        # 템플릿 파일 설정 (테스트용 - GenAI API 비용 절감)
+        self.template_book_id = "2bec5881-f268-4fd1-8b89-0c74e145203d"
+        self.template_image = "0_page_1.png"
+        self.template_video = "page_1.mp4"
 
         # HTTP 클라이언트 설정 (재사용 가능)
         if http_client:
@@ -279,15 +285,8 @@ class BookService:
                 json={"texts": dialogs},
                 timeout=timeout_seconds,
             )
-            logger.info(
-                f"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n[BookService] TTS API call completed: {response}"
-            )
-
             response.raise_for_status()
             result = response.json()
-            logger.info(
-                f"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n[BookService] TTS API call completed: {result}"
-            )
 
             logger.debug(f"[BookService] TTS API raw response: {result}")
 
@@ -446,7 +445,7 @@ class BookService:
             max_pages = len(input_texts)
 
             # 페이지당 최대 대사 수 설정 (고정값 또는 동적 계산 가능)
-            max_dialogues_per_page = 3  # 필요에 따라 조정 가능
+            max_dialogues_per_page = 2  # 필요에 따라 조정 가능
 
             # 동적 스키마 생성
             response_schema = create_stories_response_schema(
@@ -506,15 +505,24 @@ class BookService:
 
         try:
             # 1. 이미지 생성 및 업로드 (fallback용)
-            image_url = await self._generate_storybook_page_image(
+            # 테스트용 - 템플릿 복사 (활성화)
+            image_url = await self._generate_storybook_page_image_from_template(
                 index, story, image, book_id, f"page_{index + 1}"
             )
+            # 서비스용 - GenAI API 호출 (주석처리)
+            # image_url = await self._generate_storybook_page_image(
+            #     index, story, image, book_id, f"page_{index + 1}"
+            # )
 
             # 2. 비디오 생성 및 업로드
-            video_url = await self._generate_storybook_page_video(
+            # 테스트용 - 템플릿 복사 (활성화)
+            video_url = await self._generate_storybook_page_video_from_template(
                 index, story, image_url, book_id, f"page_{index + 1}"
             )
-            # video_url = ""  # 비디오 생성 비활성화
+            # 서비스용 - GenAI API 호출 (주석처리)
+            # video_url = await self._generate_storybook_page_video(
+            #     index, story, image_url, book_id, f"page_{index + 1}"
+            # )
 
             # 3. 페이지 객체 생성
             if video_url:
@@ -558,6 +566,61 @@ class BookService:
                 dialogues=[],
             )
 
+    # ================================================================
+    # 테스트용 템플릿 파일 복사 (GenAI API 비용 절감)
+    # ================================================================
+
+    async def _generate_storybook_page_image_from_template(
+        self, index: int, story: List[str], input_img: dict, book_id: str, page_id: str
+    ) -> str:
+        """
+        템플릿 이미지를 복사하여 페이지 이미지 생성 (테스트용)
+
+        Args:
+            index: 페이지 인덱스
+            story: 페이지 시나리오 텍스트 배열 (미사용)
+            input_img: 업로드할 이미지 파일 (미사용)
+            book_id: Book ID
+            page_id: Page ID
+
+        Returns:
+            str: 복사된 이미지 URL
+        """
+        logger.info(f"[BookService] Copying template image for page {index + 1}")
+        try:
+            # 템플릿 이미지 경로
+            template_path = (
+                Path(self.image_data_dir) / self.template_book_id / self.template_image
+            )
+
+            # 대상 디렉토리 생성
+            target_dir = Path(self.image_data_dir) / book_id
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            # 대상 파일 경로
+            target_filename = f"{index}_{page_id}.png"
+            target_path = target_dir / target_filename
+
+            # 파일 복사
+            shutil.copy2(template_path, target_path)
+
+            # URL 생성
+            image_url = f"/data/image/{book_id}/{target_filename}"
+
+            logger.info(f"[BookService] Template image copied: {image_url}")
+            return image_url
+
+        except Exception as e:
+            logger.error(
+                f"[BookService] Template image copy failed for page {index + 1}: {e}",
+                exc_info=True,
+            )
+            return ""
+
+    # ================================================================
+    # 서비스용 이미지 생성 (GenAI API 호출 - 주석처리)
+    # ================================================================
+
     async def _generate_storybook_page_image(
         self, index: int, story: List[str], input_img: dict, book_id: str, page_id: str
     ) -> str:
@@ -581,12 +644,12 @@ class BookService:
             prompt = GenerateImagePrompt(
                 stories=story, style_keyword="cartoon"
             ).render()
-            response = self.genai_client.models.generate_content(
+            response = await self.genai_client.aio.models.generate_content(
                 model="gemini-2.5-flash-image",
                 contents=[prompt, img],
                 config=types.GenerateContentConfig(
                     image_config=types.ImageConfig(
-                        aspect_ratio="4:3",
+                        aspect_ratio="3:4",
                     )
                 ),
             )
@@ -616,6 +679,57 @@ class BookService:
             )
             return "<image_url>"
 
+    async def _generate_storybook_page_video_from_template(
+        self, index: int, story: List[str], image_url: str, book_id: str, page_id: str
+    ) -> str:
+        """
+        템플릿 비디오를 복사하여 페이지 비디오 생성 (테스트용)
+
+        Args:
+            index: 페이지 인덱스
+            story: 페이지 시나리오 텍스트 배열 (미사용)
+            image_url: 생성된 이미지 URL (미사용)
+            book_id: Book ID
+            page_id: Page ID
+
+        Returns:
+            str: 복사된 비디오 URL
+        """
+        logger.info(f"[BookService] Copying template video for page {index + 1}")
+        try:
+            # 템플릿 비디오 경로
+            template_path = (
+                Path(self.video_data_dir) / self.template_book_id / self.template_video
+            )
+
+            # 대상 디렉토리 생성
+            target_dir = Path(self.video_data_dir) / book_id
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            # 대상 파일 경로
+            target_filename = f"{page_id}.mp4"
+            target_path = target_dir / target_filename
+
+            # 파일 복사
+            shutil.copy2(template_path, target_path)
+
+            # URL 생성
+            video_url = f"/data/video/{book_id}/{target_filename}"
+
+            logger.info(f"[BookService] Template video copied: {video_url}")
+            return video_url
+
+        except Exception as e:
+            logger.error(
+                f"[BookService] Template video copy failed for page {index + 1}: {e}",
+                exc_info=True,
+            )
+            return ""
+
+    # ================================================================
+    # 서비스용 비디오 생성 (GenAI API 호출 - 주석처리)
+    # ================================================================
+
     async def _generate_storybook_page_video(
         self, index: int, story: List[str], image_url: str, book_id: str, page_id: str
     ) -> str:
@@ -640,7 +754,6 @@ class BookService:
 
         try:
             # 1. 이미지 URL을 로컬 파일 경로로 변환
-            # image_url: "/data/image/{book_id}/{filename}" -> "./data/image/{book_id}/{filename}"
             image_path = str(
                 Path(self.image_data_dir) / image_url.replace("/data/image/", "")
             )
@@ -654,13 +767,12 @@ class BookService:
             prompt = GenerateVideoPrompt(stories=story).render()
 
             # 4. GenAI 비디오 생성 요청 (동기 호출)
-            operation = self.genai_client.models.generate_videos(
-                model="veo-3.1-generate-preview",
+            operation = await self.genai_client.aio.models.generate_videos(
+                model="veo-3.1-fast-generate-preview",
                 prompt=prompt,
                 image=image_part,
                 config=types.GenerateVideosConfig(
                     last_frame=image_part,
-                    # duration_seconds=4,
                 ),
             )
 

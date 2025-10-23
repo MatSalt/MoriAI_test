@@ -33,6 +33,7 @@ class LocalStorageService(AbstractStorageService):
         self,
         image_data_dir: str = "./data/image",
         video_data_dir: str = "./data/video",
+        audio_data_dir: str = "./data/sound",
     ):
         """
         LocalStorageService 초기화
@@ -40,13 +41,16 @@ class LocalStorageService(AbstractStorageService):
         Args:
             image_data_dir: 이미지 저장 디렉토리
             video_data_dir: 비디오 저장 디렉토리
+            audio_data_dir: 오디오 저장 디렉토리
         """
         self.image_data_dir = Path(image_data_dir)
         self.video_data_dir = Path(video_data_dir)
+        self.audio_data_dir = Path(audio_data_dir)
         self.image_data_dir.mkdir(parents=True, exist_ok=True)
         self.video_data_dir.mkdir(parents=True, exist_ok=True)
+        self.audio_data_dir.mkdir(parents=True, exist_ok=True)
         logger.info(
-            f"LocalStorageService initialized - Image dir: {self.image_data_dir}, Video dir: {self.video_data_dir}"
+            f"LocalStorageService initialized - Image dir: {self.image_data_dir}, Video dir: {self.video_data_dir}, Audio dir: {self.audio_data_dir}"
         )
 
     async def upload_file(
@@ -77,6 +81,8 @@ class LocalStorageService(AbstractStorageService):
                 base_dir = self.image_data_dir
             elif media_type == "video":
                 base_dir = self.video_data_dir
+            elif media_type == "audio":
+                base_dir = self.audio_data_dir
             else:
                 raise ValueError(f"Unsupported media type: {media_type}")
 
@@ -140,6 +146,9 @@ class LocalStorageService(AbstractStorageService):
             elif media_type == "video":
                 base_dir = self.video_data_dir
                 prefix = "/data/video/"
+            elif media_type == "audio":
+                base_dir = self.audio_data_dir
+                prefix = "/data/sound/"
             else:
                 logger.warning(f"Unsupported media type: {media_type}")
                 return False
@@ -181,9 +190,10 @@ class LocalStorageService(AbstractStorageService):
 
     async def delete_book_assets(self, book: Book) -> bool:
         """
-        Book에 속한 모든 파일 리소스 삭제
+        Book에 속한 모든 파일 리소스 삭제 및 빈 디렉토리 정리
 
         Pages의 배경 이미지, 비디오, dialogues의 오디오 파일 모두 삭제
+        파일 삭제 후 빈 디렉토리도 자동으로 삭제
 
         Args:
             book: 파일을 삭제할 Book 객체
@@ -196,22 +206,49 @@ class LocalStorageService(AbstractStorageService):
 
             # 각 페이지의 리소스 삭제
             for page in book.pages:
-                # 배경 이미지 삭제
-                if page.background_image:
-                    result = await self.delete_file(page.background_image, media_type="image")
-                    if not result:
-                        success = False
+                # 페이지 타입에 따라 적절한 파일 삭제
+                if page.type == "image":
+                    # 이미지 타입: content를 이미지로 삭제
+                    if page.content:
+                        result = await self.delete_file(page.content, media_type="image")
+                        if not result:
+                            success = False
 
-                # 비디오 삭제
-                if page.video_url:
-                    result = await self.delete_file(page.video_url, media_type="video")
-                    if not result:
-                        success = False
+                elif page.type == "video":
+                    # 비디오 타입: content를 비디오로, fallback_image를 이미지로 삭제
+                    if page.content:
+                        result = await self.delete_file(page.content, media_type="video")
+                        if not result:
+                            success = False
 
-                # 각 대사의 오디오 파일 삭제 (향후 지원)
-                # for dialogue in page.dialogues:
-                #     if dialogue.part_audio_url:
-                #         await self.delete_file(dialogue.part_audio_url, media_type="audio")
+                    if page.fallback_image:
+                        result = await self.delete_file(page.fallback_image, media_type="image")
+                        if not result:
+                            success = False
+
+                # 각 대사의 오디오 파일 삭제
+                for dialogue in page.dialogues:
+                    if dialogue.part_audio_url:
+                        result = await self.delete_file(dialogue.part_audio_url, media_type="audio")
+                        if not result:
+                            success = False
+
+            # 파일 삭제 후 빈 디렉토리 정리
+            image_dir = self.image_data_dir / book.id
+            video_dir = self.video_data_dir / book.id
+
+            # 이미지 디렉토리가 비어있으면 삭제
+            if image_dir.exists() and not any(image_dir.iterdir()):
+                image_dir.rmdir()
+                logger.info(f"Empty image directory deleted: {book.id}")
+
+            # 비디오 디렉토리가 비어있으면 삭제
+            if video_dir.exists() and not any(video_dir.iterdir()):
+                video_dir.rmdir()
+                logger.info(f"Empty video directory deleted: {book.id}")
+
+            # 주의: 오디오는 batch_id로 관리되므로 디렉토리는 삭제하지 않음
+            # 오디오 파일만 개별 삭제됨
 
             if success:
                 logger.info(f"All assets deleted for book: {book.id}")
@@ -226,7 +263,9 @@ class LocalStorageService(AbstractStorageService):
 
     async def delete_book_directory(self, book_id: str) -> bool:
         """
-        Book 디렉토리 전체 삭제
+        Book 디렉토리 전체 삭제 (이미지 + 비디오)
+
+        주의: 오디오는 batch_id로 관리되므로 book_id 기반 삭제 불가
 
         Args:
             book_id: Book ID
@@ -235,15 +274,27 @@ class LocalStorageService(AbstractStorageService):
             bool: 삭제 성공 여부
         """
         try:
-            book_dir = self.image_data_dir / book_id
+            success = True
+            image_dir = self.image_data_dir / book_id
+            video_dir = self.video_data_dir / book_id
 
-            if book_dir.exists():
-                shutil.rmtree(book_dir)
-                logger.info(f"Book directory deleted: {book_id}")
-                return True
+            # 이미지 디렉토리 삭제
+            if image_dir.exists():
+                shutil.rmtree(image_dir)
+                logger.info(f"Book image directory deleted: {book_id}")
             else:
-                logger.warning(f"Book directory not found: {book_id}")
-                return False
+                logger.warning(f"Book image directory not found: {book_id}")
+                success = False
+
+            # 비디오 디렉토리 삭제
+            if video_dir.exists():
+                shutil.rmtree(video_dir)
+                logger.info(f"Book video directory deleted: {book_id}")
+            else:
+                logger.warning(f"Book video directory not found: {book_id}")
+                success = False
+
+            return success
 
         except Exception as e:
             logger.error(f"Failed to delete book directory: {e}")
@@ -268,6 +319,9 @@ class LocalStorageService(AbstractStorageService):
             elif media_type == "video":
                 base_dir = self.video_data_dir
                 prefix = "/data/video/"
+            elif media_type == "audio":
+                base_dir = self.audio_data_dir
+                prefix = "/data/sound/"
             else:
                 logger.warning(f"Unsupported media type: {media_type}")
                 return False

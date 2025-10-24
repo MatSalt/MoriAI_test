@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import List, Tuple
 from io import BytesIO
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import (
     BooksListResponse,
@@ -118,7 +119,18 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+# 허용할 출처 목록
+origins = [
+    "http://localhost:5173", # 프론트엔드 개발 서버 주소
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ================================================================
 # Health Check

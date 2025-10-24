@@ -12,6 +12,8 @@ services:
       # - ./src/tts:/app/tts
       # 프로덕션 모드: 데이터 볼륨만 마운트
       - data-volume:/app/data
+    env_file:
+      - .env
     networks:
       - moriai-network
     healthcheck:

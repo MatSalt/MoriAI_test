@@ -12,7 +12,6 @@ RUN pip install --no-cache-dir -r /app/tts/requirements.txt
 # 소스 코드 복사
 COPY src/tts/main.py /app/tts/main.py
 COPY src/tts/src /app/tts/src
-COPY src/tts/.env /app/tts/.env
 
 # 작업 디렉토리 설정
 WORKDIR /app/tts

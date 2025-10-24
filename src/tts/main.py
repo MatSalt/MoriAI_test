@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, validator
 from dotenv import load_dotenv
 from src.tts_generator import TtsGenerator
-
+from fastapi.middleware.cors import CORSMiddleware
 # 환경 변수 로드
 load_dotenv()
 
@@ -26,6 +26,18 @@ app = FastAPI(
     title="MoriAI TTS Service",
     description="ElevenLabs 기반 비동기 TTS 생성 API",
     version="1.0.0",
+)
+# 허용할 출처 목록
+origins = [
+    "http://localhost:5173", # 프론트엔드 개발 서버 주소
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # TTS Generator 싱글톤 인스턴스

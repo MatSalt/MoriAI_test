@@ -9,8 +9,11 @@ RUN apk add --no-cache wget
 COPY src/tts/requirements.txt /app/tts/requirements.txt
 RUN pip install --no-cache-dir -r /app/tts/requirements.txt
 
-# 소스 코드 복사
+# 소스 코드 복사 (Feature-First 구조)
 COPY src/tts/main.py /app/tts/main.py
+COPY src/tts/core /app/tts/core
+COPY src/tts/shared /app/tts/shared
+COPY src/tts/features /app/tts/features
 COPY src/tts/src /app/tts/src
 
 # 작업 디렉토리 설정

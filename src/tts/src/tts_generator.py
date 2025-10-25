@@ -229,7 +229,7 @@ class TtsGenerator:
                 logger.debug(f"TTS 생성 완료: {file_path}")
 
                 # 컨테이너 내 절대 경로 반환 (/app 제거)
-                return str(file_path).removeprefix('/app')
+                return str(file_path).removeprefix("/app")
 
             except Exception as e:
                 logger.error(f"TTS 생성 실패 ('{text[:30]}...'): {e}")
@@ -287,7 +287,7 @@ class TtsGenerator:
         # 캐시된 파일이 있으면 재사용
         if file_path.exists():
             logger.info(f"캐시된 파일 재사용: {word}.mp3")
-            return str(file_path).removeprefix('/app')
+            return str(file_path).removeprefix("/app")
 
         # 환경변수 기본값 처리
         voice_id = voice_id or os.getenv("TTS_DEFAULT_VOICE_ID", "TxWD6rImY3v4izkm2VL0")
@@ -341,7 +341,7 @@ class TtsGenerator:
             await self._save_audio_file(file_path, decoded_audio)
 
             logger.info(f"단어 TTS 생성 완료: {file_path}")
-            return str(file_path).removeprefix('/app')
+            return str(file_path).removeprefix("/app")
 
         except Exception as e:
             logger.error(f"단어 TTS 생성 실패 ('{word}'): {e}")
@@ -364,3 +364,32 @@ class TtsGenerator:
                 else 0
             ),
         }
+
+    async def get_clone_voice_list(self):
+        """
+        클론 보이스 목록 조회
+
+        Returns:
+            List[dict]: 보이스 목록 [{"voice_label": str, "voice_id": str}, ...]
+        """
+        # ElevenLabs API 호출 (동기 함수를 비동기로 실행)
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: self.client.voices.get_all(show_legacy=False)
+        )
+
+        voices = []
+        for x in response.voices:
+            if x.category in "cloned":
+                voices.append(
+                    {
+                        "voice_label": x.name,
+                        "voice_id": x.voice_id,
+                        'description': x.description or '',
+                        'category': x.category if hasattr(x, 'category') else 'unknown',
+                        'preview_url': x.preview_url if hasattr(x, 'preview_url') else None,
+                        'labels': x.labels if hasattr(x, 'labels') and x.labels else {},
+                    }
+                )
+        return voices

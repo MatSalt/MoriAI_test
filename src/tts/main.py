@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field, validator
 from dotenv import load_dotenv
 from src.tts_generator import TtsGenerator
 from fastapi.middleware.cors import CORSMiddleware
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -29,7 +30,7 @@ app = FastAPI(
 )
 # 허용할 출처 목록
 origins = [
-    "http://localhost:5173", # 프론트엔드 개발 서버 주소
+    "http://localhost:5173",  # 프론트엔드 개발 서버 주소
 ]
 
 app.add_middleware(
@@ -53,7 +54,15 @@ class TTSRequest(BaseModel):
     texts: List[List[str]] = Field(
         ...,
         description="중첩 문자열 리스트 (예: [['hello', 'world'], ['test']])",
-        example=[["North Korea fired multiple short-range ballistic missiles on Wednesday morning", "just days ahead of the Asia-Pacific Economic Cooperation summit in Gyeongju"], ["It marks the North’s first ballistic missile provocation in five months. Kim In-kyung has this report."]],
+        example=[
+            [
+                "North Korea fired multiple short-range ballistic missiles on Wednesday morning",
+                "just days ahead of the Asia-Pacific Economic Cooperation summit in Gyeongju",
+            ],
+            [
+                "It marks the North’s first ballistic missile provocation in five months. Kim In-kyung has this report."
+            ],
+        ],
     )
     voice_id: Optional[str] = Field(
         default=None,
@@ -144,6 +153,21 @@ class StatsResponse(BaseModel):
     file_count: int
 
 
+class Voice(BaseModel):
+    voice_label: str
+    voice_id: str
+    description :str
+    category:str
+    preview_url:str
+    labels:dict
+
+
+class VoiceIdResponseList(BaseModel):
+    """생성된 보이스 리스트 반환"""
+
+    voices: List[Voice]
+
+
 # === API Endpoints ===
 
 
@@ -157,6 +181,19 @@ async def health_check():
 async def read_root():
     """루트 엔드포인트"""
     return {"service": "MoriAI TTS Service", "version": "1.0.0", "status": "running"}
+
+
+@app.get("/tts/voices", response_model=VoiceIdResponseList)
+async def voices_list_response():
+    """생성된 클론 보이스 목록 반환"""
+    try:
+        ret = await tts_generator.get_clone_voice_list()
+        return VoiceIdResponseList(voices=ret)
+    except Exception as e:
+        logger.error(f"Clone Voice 반환 실패: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Voice List 반환 오류가 발생했습니다: {str(e)}"
+        )
 
 
 @app.post("/tts/generate", response_model=TTSResponse)
